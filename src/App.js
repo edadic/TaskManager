@@ -1,32 +1,65 @@
 import './App.css';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import TaskList from './components/TaskList';
 import TaskForm from './components/TaskForm';
 
 function App() {
   const [tasks, setTasks] = useState([]);
 
-  const addTask = (newTask) => {
-    setTasks([...tasks, {
-      id: Date.now(),
-      title: newTask.title,
-      description: newTask.description,
-      dueDate: newTask.dueDate,
-      priority: newTask.priority,
-      completed: false
-    }]);
+  useEffect(() => {
+    fetchTasks();
+  }, []);
+
+  const fetchTasks = async () => {
+    try {
+      const response = await fetch('http://localhost:5001/api/tasks');
+      const data = await response.json();
+      setTasks(data);
+    } catch (error) {
+      console.error('Error fetching tasks:', error);
+    }
   };
 
-  const deleteTask = (taskId) => {
-    setTasks(tasks.filter(task => task.id !== taskId));
+  const addTask = async (newTask) => {
+    try {
+      const response = await fetch('http://localhost:5001/api/tasks', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(newTask),
+      });
+      const data = await response.json();
+      setTasks([data, ...tasks]);
+    } catch (error) {
+      console.error('Error adding task:', error);
+    }
   };
 
-  const toggleComplete = (taskId) => {
-    setTasks(tasks.map(task => 
-      task.id === taskId 
-        ? { ...task, completed: !task.completed }
-        : task
-    ));
+  const deleteTask = async (taskId) => {
+    try {
+      await fetch(`http://localhost:5001/api/tasks/${taskId}`, {
+        method: 'DELETE',
+      });
+      setTasks(tasks.filter(task => task.id !== taskId));
+    } catch (error) {
+      console.error('Error deleting task:', error);
+    }
+  };
+
+  const toggleComplete = async (taskId) => {
+    try {
+      await fetch(`http://localhost:5001/api/tasks/${taskId}/complete`, {
+        method: 'PUT',
+      });
+      setTasks(tasks.map(task => 
+        task.id === taskId 
+          ? { ...task, completed: !task.completed }
+          : task
+      ));
+    } catch (error) {
+      console.error('Error updating task:', error);
+    }
   };
 
   return (
