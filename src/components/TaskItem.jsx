@@ -7,6 +7,18 @@ const TaskItem = ({ task, onComplete, onDelete }) => {
     high: 'bg-red-100 text-red-800'
   };
 
+  const formatDate = (dateString) => {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    return date.toLocaleString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  };
+
   return (
     <div className="flex items-center gap-4 border border-gray-200 rounded-md p-4">
       <input
@@ -25,7 +37,7 @@ const TaskItem = ({ task, onComplete, onDelete }) => {
           </span>
         </div>
         <p className="text-gray-600 mt-1">{task.description}</p>
-        <p className="text-sm text-gray-500 mt-2">Due: {task.dueDate}</p>
+        <p className="text-sm text-gray-500 mt-2">Due: {formatDate(task.dueDate)}</p>
       </div>
       <button 
         onClick={() => onDelete(task.id)}
