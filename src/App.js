@@ -1,6 +1,6 @@
 import './App.css';
-import React from 'react'; // Remove unused useState and useEffect
-import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import Login from './components/auth/Login';
 import Register from './components/auth/Register';
@@ -8,6 +8,7 @@ import Dashboard from './components/Dashboard';
 import AdminDashboard from './components/AdminDashboard';
 import ProtectedRoute from './components/auth/ProtectedRoute';
 import Navigation from './components/Navigation';
+import CalendarPage from './components/CalendarPage';
 
 function App() {
   return (
@@ -35,6 +36,14 @@ function App() {
               }
             />
             <Route path="/" element={<Navigate to="/dashboard" />} />
+            <Route
+              path="/calendar"
+              element={
+                <ProtectedRoute>
+                  <CalendarPage />
+                </ProtectedRoute>
+              }
+            />
           </Routes>
         </div>
       </Router>

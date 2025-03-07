@@ -37,6 +37,12 @@ const Navigation = () => {
             >
               My Tasks
             </Link>
+            <Link
+              to="/calendar"
+              className="text-gray-600 hover:text-gray-900"
+            >
+              Calendar
+            </Link>
             <span className="text-gray-600">
               Welcome, {user.username}
             </span>
