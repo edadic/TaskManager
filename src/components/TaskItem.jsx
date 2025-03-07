@@ -1,57 +1,50 @@
 import React from 'react';
 
 const TaskItem = ({ task, onComplete, onDelete, isAdmin }) => {
-  const priorityColors = {
-    low: 'bg-green-100 text-green-800',
-    medium: 'bg-yellow-100 text-yellow-800',
-    high: 'bg-red-100 text-red-800'
-  };
-
-  const formatDate = (dateString) => {
-    if (!dateString) return '';
-    const date = new Date(dateString);
-    return date.toLocaleString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
-  };
-
-  const isOverdue = (dateString) => {
-    if (!dateString) return false;
-    return new Date(dateString) < new Date() && !task.completed;
+  const handleClick = (e) => {
+    e.stopPropagation();
   };
 
   return (
-    <div className={`flex items-center gap-4 border rounded-md p-4 ${
-      isOverdue(task.due_date) ? 'border-red-300 bg-red-50' : 'border-gray-200'
-    }`}>
-      <input
-        type="checkbox"
-        checked={task.completed}
-        onChange={() => onComplete(task.id)}
-        className="h-5 w-5 text-blue-500 rounded border-gray-300 focus:ring-blue-500"
-      />
-      <div className="flex-1">
-        <div className="flex items-center gap-2">
-          <h3 className={`font-medium ${task.completed ? 'line-through text-gray-500' : ''}`}>
-            {task.title}
-          </h3>
-          <span className={`text-xs px-2 py-1 rounded-full ${priorityColors[task.priority]}`}>
-            {task.priority}
-          </span>
+    <div className="border rounded-lg p-4 hover:bg-gray-50 transition-colors">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-4">
+          <input
+            type="checkbox"
+            checked={task.completed}
+            onChange={(e) => {
+              e.stopPropagation();
+              onComplete(task.id);
+            }}
+            className="h-5 w-5"
+          />
+          <div>
+            <h3 className="font-medium">{task.title}</h3>
+            <div className="flex gap-3 text-sm text-gray-600">
+              <span>Due: {new Date(task.due_date).toLocaleDateString()}</span>
+              <span className={`${
+                task.priority === 'high' ? 'text-red-600' :
+                task.priority === 'medium' ? 'text-yellow-600' :
+                'text-green-600'
+              }`}>
+                {task.priority}
+              </span>
+            </div>
+          </div>
         </div>
-        <p className="text-gray-600 mt-1">{task.description}</p>
-        <p className="text-sm text-gray-500 mt-2">Due: {formatDate(task.dueDate)}</p>
+        
+        {onDelete && (
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onDelete(task.id);
+            }}
+            className="text-red-500 hover:text-red-700"
+          >
+            Delete
+          </button>
+        )}
       </div>
-      <button 
-        onClick={() => onDelete(task.id)}
-        className="text-red-500 hover:text-red-700 p-2"
-      >
-        Delete
-      </button>
     </div>
   );
 };

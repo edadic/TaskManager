@@ -21,7 +21,7 @@ app.use(express.json());
 
 // Routes
 app.use('/api/auth', authRoutes);
-app.use('/api/users', userRoutes);  // Make sure this line is present and before protected routes
+app.use('/api/users', userRoutes);
 
 // Connect to database
 db.connect((err) => {
@@ -158,6 +158,10 @@ app.delete('/api/tasks/:id', auth, isAdmin, (req, res) => {
     res.json({ message: 'Task deleted successfully' });
   });
 });
+
+const commentRoutes = require('./routes/comments');
+
+app.use('/api/comments', commentRoutes);
 
 const PORT = process.env.PORT || 5001;
 app.listen(PORT, () => {

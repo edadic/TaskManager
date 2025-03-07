@@ -1,18 +1,20 @@
 import React, { useState } from 'react';
 import TaskItem from './TaskItem';
+import TaskDetail from './TaskDetail';
 
-const TaskList = ({ tasks, onComplete, onDelete, isAdmin }) => {
+const TaskList = ({ tasks = [], onComplete, onDelete, isAdmin }) => {
   const [filter, setFilter] = useState('all');
   const [sortBy, setSortBy] = useState('dueDate');
+  const [selectedTask, setSelectedTask] = useState(null);
 
-  const filteredTasks = tasks.filter(task => {
+  const filteredTasks = Array.isArray(tasks) ? tasks.filter(task => {
     if (filter === 'active') return !task.completed;
     if (filter === 'completed') return task.completed;
     if (filter === 'overdue') {
       return new Date(task.due_date) < new Date() && !task.completed;
     }
     return true;
-  });
+  }) : [];
 
   const sortedTasks = [...filteredTasks].sort((a, b) => {
     if (sortBy === 'dueDate') {
@@ -24,6 +26,10 @@ const TaskList = ({ tasks, onComplete, onDelete, isAdmin }) => {
     }
     return 0;
   });
+
+  const handleTaskClick = (task) => {
+    setSelectedTask(task);
+  };
 
   return (
     <div className="bg-white shadow-lg rounded-xl p-8">
@@ -87,16 +93,28 @@ const TaskList = ({ tasks, onComplete, onDelete, isAdmin }) => {
           <p className="text-gray-500 text-center py-8">No tasks found</p>
         ) : (
           sortedTasks.map((task) => (
-            <TaskItem
+            <div 
               key={task.id}
-              task={task}
-              onComplete={onComplete}
-              onDelete={isAdmin ? onDelete : undefined}
-              isAdmin={isAdmin}
-            />
+              onClick={() => handleTaskClick(task)}
+              className="cursor-pointer"
+            >
+              <TaskItem
+                task={task}
+                onComplete={onComplete}
+                onDelete={isAdmin ? onDelete : undefined}
+                isAdmin={isAdmin}
+              />
+            </div>
           ))
         )}
       </div>
+
+      {selectedTask && (
+        <TaskDetail
+          task={selectedTask}
+          onClose={() => setSelectedTask(null)}
+        />
+      )}
     </div>
   );
 };
