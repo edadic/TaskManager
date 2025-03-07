@@ -23,6 +23,12 @@ const Navigation = () => {
             </Link>
           </div>
           <div className="flex items-center space-x-4">
+            <Link
+              to="/dashboard"
+              className="text-gray-600 hover:text-gray-900"
+            >
+              Home
+            </Link>
             {user.role === 'admin' && (
               <Link
                 to="/admin"
@@ -32,10 +38,10 @@ const Navigation = () => {
               </Link>
             )}
             <Link
-              to="/dashboard"
+              to="/profile"
               className="text-gray-600 hover:text-gray-900"
             >
-              My Tasks
+              Profile
             </Link>
             <Link
               to="/calendar"
@@ -43,9 +49,6 @@ const Navigation = () => {
             >
               Calendar
             </Link>
-            <span className="text-gray-600">
-              Welcome, {user.username}
-            </span>
             <button
               onClick={handleLogout}
               className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600"

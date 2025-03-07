@@ -9,6 +9,7 @@ import AdminDashboard from './components/AdminDashboard';
 import ProtectedRoute from './components/auth/ProtectedRoute';
 import Navigation from './components/Navigation';
 import CalendarPage from './components/CalendarPage';
+import UserProfile from './components/UserProfile';
 
 function App() {
   return (
@@ -19,6 +20,15 @@ function App() {
           <Routes>
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
+            {/* Add the Profile route */}
+            <Route
+              path="/profile"
+              element={
+                <ProtectedRoute>
+                  <UserProfile />
+                </ProtectedRoute>
+              }
+            />
             <Route
               path="/dashboard"
               element={
