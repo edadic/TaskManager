@@ -1,6 +1,6 @@
 import React from 'react';
 
-const TaskItem = ({ task, onComplete, onDelete }) => {
+const TaskItem = ({ task, onComplete, onDelete, isAdmin }) => {
   const priorityColors = {
     low: 'bg-green-100 text-green-800',
     medium: 'bg-yellow-100 text-yellow-800',
@@ -19,8 +19,15 @@ const TaskItem = ({ task, onComplete, onDelete }) => {
     });
   };
 
+  const isOverdue = (dateString) => {
+    if (!dateString) return false;
+    return new Date(dateString) < new Date() && !task.completed;
+  };
+
   return (
-    <div className="flex items-center gap-4 border border-gray-200 rounded-md p-4">
+    <div className={`flex items-center gap-4 border rounded-md p-4 ${
+      isOverdue(task.due_date) ? 'border-red-300 bg-red-50' : 'border-gray-200'
+    }`}>
       <input
         type="checkbox"
         checked={task.completed}

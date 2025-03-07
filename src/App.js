@@ -1,81 +1,44 @@
 import './App.css';
-import React, { useState, useEffect } from 'react';
-import TaskList from './components/TaskList';
-import TaskForm from './components/TaskForm';
+import React from 'react'; // Remove unused useState and useEffect
+import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
+import { AuthProvider } from './context/AuthContext';
+import Login from './components/auth/Login';
+import Register from './components/auth/Register';
+import Dashboard from './components/Dashboard';
+import AdminDashboard from './components/AdminDashboard';
+import ProtectedRoute from './components/auth/ProtectedRoute';
+import Navigation from './components/Navigation';
 
 function App() {
-  const [tasks, setTasks] = useState([]);
-
-  useEffect(() => {
-    fetchTasks();
-  }, []);
-
-  const fetchTasks = async () => {
-    try {
-      const response = await fetch('http://localhost:5001/api/tasks');
-      const data = await response.json();
-      setTasks(data);
-    } catch (error) {
-      console.error('Error fetching tasks:', error);
-    }
-  };
-
-  const addTask = async (newTask) => {
-    try {
-      const response = await fetch('http://localhost:5001/api/tasks', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(newTask),
-      });
-      const data = await response.json();
-      setTasks([data, ...tasks]);
-    } catch (error) {
-      console.error('Error adding task:', error);
-    }
-  };
-
-  const deleteTask = async (taskId) => {
-    try {
-      await fetch(`http://localhost:5001/api/tasks/${taskId}`, {
-        method: 'DELETE',
-      });
-      setTasks(tasks.filter(task => task.id !== taskId));
-    } catch (error) {
-      console.error('Error deleting task:', error);
-    }
-  };
-
-  const toggleComplete = async (taskId) => {
-    try {
-      await fetch(`http://localhost:5001/api/tasks/${taskId}/complete`, {
-        method: 'PUT',
-      });
-      setTasks(tasks.map(task => 
-        task.id === taskId 
-          ? { ...task, completed: !task.completed }
-          : task
-      ));
-    } catch (error) {
-      console.error('Error updating task:', error);
-    }
-  };
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-12">
-      <div className="container mx-auto px-4 max-w-3xl">
-        <h1 className="text-4xl font-bold text-center text-gray-800 mb-12">Task Manager</h1>
-        <div className="space-y-8">
-          <TaskForm onAddTask={addTask} />
-          <TaskList 
-            tasks={tasks} 
-            onDelete={deleteTask} 
-            onComplete={toggleComplete} 
-          />
+    <AuthProvider>
+      <Router>
+        <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+          <Navigation />
+          <Routes>
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route
+              path="/dashboard"
+              element={
+                <ProtectedRoute>
+                  <Dashboard />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin"
+              element={
+                <ProtectedRoute adminOnly>
+                  <AdminDashboard />
+                </ProtectedRoute>
+              }
+            />
+            <Route path="/" element={<Navigate to="/dashboard" />} />
+          </Routes>
         </div>
-      </div>
-    </div>
+      </Router>
+    </AuthProvider>
   );
 }
 

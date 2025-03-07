@@ -1,19 +1,33 @@
 import React, { useState } from 'react';
 import TaskItem from './TaskItem';
 
-const TaskList = ({ tasks, onDelete, onComplete }) => {
-  const [filter, setFilter] = useState('all'); // 'all', 'active', 'completed'
+const TaskList = ({ tasks, onComplete, onDelete, isAdmin }) => {
+  const [filter, setFilter] = useState('all');
+  const [sortBy, setSortBy] = useState('dueDate');
 
   const filteredTasks = tasks.filter(task => {
     if (filter === 'active') return !task.completed;
     if (filter === 'completed') return task.completed;
+    if (filter === 'overdue') {
+      return new Date(task.due_date) < new Date() && !task.completed;
+    }
     return true;
+  });
+
+  const sortedTasks = [...filteredTasks].sort((a, b) => {
+    if (sortBy === 'dueDate') {
+      return new Date(a.due_date) - new Date(b.due_date);
+    }
+    if (sortBy === 'priority') {
+      const priorityOrder = { high: 0, medium: 1, low: 2 };
+      return priorityOrder[a.priority] - priorityOrder[b.priority];
+    }
+    return 0;
   });
 
   return (
     <div className="bg-white shadow-lg rounded-xl p-8">
       <div className="flex flex-col sm:flex-row justify-between items-center mb-8 space-y-4 sm:space-y-0">
-        <h2 className="text-2xl font-bold text-gray-800">My Tasks</h2>
         <div className="flex gap-2">
           <button 
             onClick={() => setFilter('all')}
@@ -33,7 +47,7 @@ const TaskList = ({ tasks, onDelete, onComplete }) => {
                 : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
             }`}
           >
-            To Do
+            Active
           </button>
           <button 
             onClick={() => setFilter('completed')}
@@ -45,18 +59,40 @@ const TaskList = ({ tasks, onDelete, onComplete }) => {
           >
             Completed
           </button>
+          <button 
+            onClick={() => setFilter('overdue')}
+            className={`px-4 py-2 rounded-lg font-medium transition-colors duration-200 ${
+              filter === 'overdue' 
+                ? 'bg-red-600 text-white' 
+                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+            }`}
+          >
+            Overdue
+          </button>
+        </div>
+        <div className="flex items-center gap-2">
+          <span className="text-gray-600">Sort by:</span>
+          <select
+            value={sortBy}
+            onChange={(e) => setSortBy(e.target.value)}
+            className="px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+          >
+            <option value="dueDate">Due Date</option>
+            <option value="priority">Priority</option>
+          </select>
         </div>
       </div>
       <div className="space-y-4">
-        {filteredTasks.length === 0 ? (
+        {sortedTasks.length === 0 ? (
           <p className="text-gray-500 text-center py-8">No tasks found</p>
         ) : (
-          filteredTasks.map((task) => (
+          sortedTasks.map((task) => (
             <TaskItem
               key={task.id}
               task={task}
               onComplete={onComplete}
-              onDelete={onDelete}
+              onDelete={isAdmin ? onDelete : undefined}
+              isAdmin={isAdmin}
             />
           ))
         )}
