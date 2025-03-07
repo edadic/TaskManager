@@ -89,7 +89,7 @@ npm start
 The application will be available at http://localhost:3000
 
 ## Project Structure
-
+```
 TaskManager/
 ├── server/                 # Backend server code
 │   ├── config/            # Database configuration
@@ -101,6 +101,7 @@ TaskManager/
 │   ├── context/          # Auth context
 │   └── App.js            # Main app component
 └── public/               # Static files
+```
 
 ## API Endpoints
 ### Authentication
